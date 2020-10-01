@@ -67,6 +67,8 @@ fn main() -> std::io::Result<()> {
         println!("Compress the rootfs");
         Command::new("xz")
             .arg("--best")
+            .arg("-T")
+            .arg("0")
             .arg(format!("{}/{}", arch, result_tar))
             .output()
             .expect("failed to compress the rootfs");
