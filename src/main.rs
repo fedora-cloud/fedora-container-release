@@ -27,7 +27,7 @@ fn main() -> std::io::Result<()> {
         let url_elements: Vec<&str> = url.split('/').collect();
         let filename = url_elements.last().unwrap();
         let filedata: Vec<&str> = filename.trim_end_matches(".tar.xz").split('.').collect();
-        let arch = filedata[2];
+        let arch = filedata.last().unwrap();
         let version = filedata[0]
             .trim_start_matches("Fedora-Container-Base-")
             .replace("-", ".");
