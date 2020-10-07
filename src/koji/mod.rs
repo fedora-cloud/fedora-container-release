@@ -4,7 +4,7 @@ const PKG_NAME: &str = "Fedora-Container-Base";
 const PKG_NAME_MINI: &str = "Fedora-Container-Minimal-Base";
 const KOJI_HUB: &str = "https://koji.fedoraproject.org/kojihub/";
 
-pub fn get_koji_archive_url(release: &str, minimal: bool) -> Vec<String> {
+pub fn get_koji_archive_url(release: &str, rawhide: &str, minimal: bool) -> Vec<String> {
     let pkg_name: &str;
     match minimal {
         true => pkg_name = PKG_NAME_MINI,
@@ -36,12 +36,16 @@ pub fn get_koji_archive_url(release: &str, minimal: bool) -> Vec<String> {
     let images = archive_data.as_array().unwrap();
 
     let mut urls = Vec::new();
+    let mut release_name = release;
+    if release == rawhide {
+        release_name = "Rawhide"
+    }
     for i in images {
         let filename = i["filename"].as_str().unwrap();
         if filename.contains(".tar.xz") {
             let url = format!(
                 "https://kojipkgs.fedoraproject.org/packages/{}/{}/{}/images/{}",
-                pkg_name, release, build_release, filename
+                pkg_name, release_name, build_release, filename
             );
             urls.push(url)
         }

@@ -1,3 +1,4 @@
+mod bodhi;
 mod koji;
 
 use askama::Template;
@@ -21,8 +22,8 @@ struct CliOptions {
 
 fn main() -> std::io::Result<()> {
     let cliopt = CliOptions::from_args();
-    let urls = koji::get_koji_archive_url(&cliopt.release, false);
-
+    let rawhide = bodhi::get_rawhide_version().unwrap();
+    let urls = koji::get_koji_archive_url(&cliopt.release, &rawhide, false);
     for url in urls {
         let url_elements: Vec<&str> = url.split('/').collect();
         let filename = url_elements.last().unwrap();
@@ -33,13 +34,13 @@ fn main() -> std::io::Result<()> {
             .replace("-", ".");
 
         let mut file = File::create(format!("{}", filename))?;
-        println!("Downloading {}", filename);
+        println!("Downloading {}", url);
         reqwest::blocking::get(&url)
             .unwrap()
             .copy_to(&mut file)
             .unwrap();
 
-        println!("Decompress the archive");
+        println!("Decompress the archive {}", filename);
         Command::new("tar")
             .arg(format!("--one-top-level={}", arch))
             .arg("-xf")
