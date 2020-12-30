@@ -3,7 +3,7 @@ mod koji;
 
 use askama::Template;
 use std::fs::{read_dir, remove_dir_all, remove_file, File};
-use std::io::{Write, Result};
+use std::io::{Result, Write};
 use std::process::Command;
 use std::thread;
 
@@ -17,9 +17,8 @@ struct ContainerfileTemplate<'a> {
 struct Archive<'a> {
     filename: &'a str,
     arch: &'a str,
-    version: String
+    version: String,
 }
-
 
 fn download_archive<'a>(url: &'a str) -> Archive<'a> {
     let url_elements: Vec<&str> = url.split('/').collect();
@@ -37,10 +36,10 @@ fn download_archive<'a>(url: &'a str) -> Archive<'a> {
         .copy_to(&mut file)
         .unwrap();
 
-    return Archive{
+    return Archive {
         filename: filename,
         arch: arch,
-        version: version
+        version: version,
     };
 }
 
@@ -86,11 +85,18 @@ pub fn prepare_containerfiles(release: String) -> Result<()> {
                 .expect("failed to compress the rootfs");
 
             let dockerfile = ContainerfileTemplate {
-                tag: &archive.version.split(".").collect::<Vec<&str>>().first().unwrap(),
+                tag: &archive
+                    .version
+                    .split(".")
+                    .collect::<Vec<&str>>()
+                    .first()
+                    .unwrap(),
                 result_tar: &format!("{}.xz", result_tar),
             };
             let mut buffer = File::create(format!("{}/Dockerfile", archive.arch)).unwrap();
-            buffer.write_all(dockerfile.render().unwrap().as_bytes()).unwrap();
+            buffer
+                .write_all(dockerfile.render().unwrap().as_bytes())
+                .unwrap();
         }))
     }
 
