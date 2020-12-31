@@ -1,1 +1,7 @@
 /target
+*.tar.xz
+aarch64/
+s390x/
+ppc64le/
+armhfp/
+x86_64/
