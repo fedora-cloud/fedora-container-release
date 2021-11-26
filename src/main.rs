@@ -6,7 +6,7 @@ use structopt::StructOpt;
 #[derive(Debug, StructOpt)]
 struct CliOptions {
     #[structopt(short, long)]
-    release: String,
+    release: i32,
 }
 
 fn main() -> std::io::Result<()> {

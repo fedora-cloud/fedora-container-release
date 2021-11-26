@@ -10,7 +10,7 @@ struct BodhiRelease {
     version: String,
 }
 
-pub fn get_rawhide_version() -> Result<String, Box<dyn std::error::Error>> {
+pub fn get_rawhide_version() -> Result<i32, Box<dyn std::error::Error>> {
     let resp: BodhiReleases =
         reqwest::blocking::get("https://bodhi.fedoraproject.org/releases/?state=pending")?
             .json()?;
@@ -21,6 +21,6 @@ pub fn get_rawhide_version() -> Result<String, Box<dyn std::error::Error>> {
             Err(_e) => (),
         }
     }
-    let rawhide: String = versions.iter().max_by(|x, y| x.cmp(y)).unwrap().to_string();
-    Ok(rawhide)
+    let rawhide = versions.iter().max_by(|x, y| x.cmp(y)).unwrap();
+    Ok(*rawhide)
 }

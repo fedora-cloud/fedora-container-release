@@ -19,7 +19,6 @@ struct Archive {
     url: String,
     filename: String,
     arch: String,
-    version: String,
     tarfile: String,
 }
 
@@ -75,7 +74,7 @@ impl Archive {
     }
 }
 
-pub fn prepare_containerfiles(release: String) -> Result<()> {
+pub fn prepare_containerfiles(release: i32) -> Result<()> {
     let rawhide = bodhi::get_rawhide_version().unwrap();
     // get the archives' url from koji
     let urls = koji::get_koji_archive_url(&release, &rawhide, false);
@@ -90,16 +89,12 @@ pub fn prepare_containerfiles(release: String) -> Result<()> {
             let filename = url_elements.last().unwrap().to_string();
             let filedata: Vec<&str> = filename.trim_end_matches(".tar.xz").split('.').collect();
             let arch = filedata.last().unwrap().to_string();
-            let version = filedata[0]
-                .trim_start_matches("Fedora-Container-Base-")
-                .replace("-", ".");
-            let tarfile = format!("fedora-{}-{}.tar", version, arch);
+            let tarfile = format!("fedora-{}-{}.tar", release, arch);
 
             let archive = Archive {
                 url: url,
                 filename: filename,
                 arch: arch,
-                version: version,
                 tarfile: tarfile,
             };
 
@@ -111,12 +106,7 @@ pub fn prepare_containerfiles(release: String) -> Result<()> {
             archive.create_rootfs();
 
             let dockerfile = ContainerfileTemplate {
-                tag: &archive
-                    .version
-                    .split(".")
-                    .collect::<Vec<&str>>()
-                    .first()
-                    .unwrap(),
+                tag: &release.to_string(),
                 result_tar: &format!("{}.xz", archive.tarfile),
             };
             let mut buffer = File::create(format!("{}/Dockerfile", archive.arch)).unwrap();
