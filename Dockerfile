@@ -1,6 +1,6 @@
 FROM fedora:latest
 
-RUN dnf update -y && dnf install -y cargo openssl openssl-devel
+RUN dnf update -y && dnf install -y cargo openssl openssl-devel xz
 WORKDIR /code
 ENV PATH="${PATH}:/root/.cargo/bin"
 ADD . /code
