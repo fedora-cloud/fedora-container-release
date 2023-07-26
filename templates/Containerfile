@@ -1,6 +1,6 @@
 FROM scratch
 LABEL maintainer="Clement Verna <cverna@fedoraproject.org>"                    
-ENV DISTTAG=f{{ tag }}container FGC=f{{ tag }} FBR=f{{ tag }}
+ENV DISTTAG=f{{ tag }}container FGC=f{{ tag }} FBR=f{{ tag }} PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ADD {{ result_tar }} / 
 CMD ["/bin/bash"]
 
